@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		50FDDC2D2D5E6A400090D19C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 50FDDC2C2D5E6A400090D19C /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		504E05B42D5CD7ED0064A00E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +31,25 @@
 		504E05A32D5CD7EC0064A00E /* booksBase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = booksBase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504E05B32D5CD7ED0064A00E /* booksBaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = booksBaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		504E05BD2D5CD7ED0064A00E /* booksBaseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = booksBaseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		50FDDC2C2D5E6A400090D19C /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		50FDDC2B2D5E69050090D19C /* Exceptions for "booksBase" folder in "booksBase" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 504E05A22D5CD7EC0064A00E /* booksBase */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		504E05A52D5CD7EC0064A00E /* booksBase */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				50FDDC2B2D5E69050090D19C /* Exceptions for "booksBase" folder in "booksBase" target */,
+			);
 			path = booksBase;
 			sourceTree = "<group>";
 		};
@@ -75,6 +93,7 @@
 		504E059A2D5CD7EC0064A00E = {
 			isa = PBXGroup;
 			children = (
+				50FDDC2C2D5E6A400090D19C /* Localizable.xcstrings */,
 				504E05A52D5CD7EC0064A00E /* booksBase */,
 				504E05B62D5CD7ED0064A00E /* booksBaseTests */,
 				504E05C02D5CD7ED0064A00E /* booksBaseUITests */,
@@ -191,6 +210,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ru,
 				Base,
 			);
 			mainGroup = 504E059A2D5CD7EC0064A00E;
@@ -212,6 +232,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50FDDC2D2D5E6A400090D19C /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +349,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -384,6 +406,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -399,6 +422,7 @@
 				DEVELOPMENT_TEAM = 35U6X396QQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = booksBase/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +452,7 @@
 				DEVELOPMENT_TEAM = 35U6X396QQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = booksBase/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

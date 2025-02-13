@@ -20,6 +20,8 @@ struct ContentView: View {
     @State private var showAlert = false
     // Управление видимостью блока добавления
     @State private var isAddingBook = false
+    // Текст для поиска
+    @State private var searchText = ""
     
     private let minLength = 3
     
@@ -28,7 +30,12 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 // Кнопка для показа/скрытия блока добавления
                 HStack {
+                    Text(String(localized: "add_book_title"))
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    
                     Spacer()
+                    
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             isAddingBook.toggle()
@@ -42,72 +49,32 @@ struct ContentView: View {
                             .padding(.bottom, 2)
                     }
                 }
-                .padding(.top, 8)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
                 
                 // Блок добавления книги
                 if isAddingBook {
-                    VStack(spacing: 12) {
-                        VStack(spacing: 8) {
-                            TextField("Название*", text: $newBookTitle)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            TextField("Автор*", text: $newBookAuthor)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            TextField("Описание", text: $newBookDescription)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        .padding(.horizontal)
-                        
-                        Button(action: addBook) {
-                            Text("Добавить книгу")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                        }
-                        .padding(.horizontal)
-                    }
-                    .padding(.vertical, 12)
-                    .background(Color(.systemGray6))
-                    .transition(.opacity.combined(with: .scale))
-                    .frame(maxWidth: .infinity)
-                    .clipped()
+                    addBookForm
                 }
                 
                 // Список книг
-                List {
-                    ForEach(books) { book in
-                        NavigationLink(destination: EditBookView(book: book)) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(book.title)
-                                    .font(.title3)
-                                Text(book.author)
-                                    .font(.headline)
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.vertical, 8)
-                        }
-                    }
-                    .onDelete(perform: deleteBook)
-                    .listRowSeparator(.visible)
-                }
-                .listStyle(PlainListStyle())
+                bookList
             }
-            .navigationTitle("Список книг")
+            .navigationTitle(String(localized: "book_list_title"))
             .toolbar {
                 EditButton()
             }
             .alert(isPresented: $showAlert) {
                 Alert(
-                    title: Text("Ошибка"),
-                    message: Text("Название и автор должны содержать минимум \(minLength) символа"),
-                    dismissButton: .default(Text("OK"))
+                    title: Text(String(localized: "error_title")),
+                    message: Text(String(localized: "error_message")),
+                    dismissButton: .default(Text(String(localized: "OK")))
                 )
             }
             .onChange(of: books) { oldBooks, newBooks in
-                // Сохраняем данные при каждом изменении списка книг
                 forceSaveData()
             }
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
         }
     }
     
@@ -136,6 +103,47 @@ struct ContentView: View {
         newBookDescription = ""
     }
     
+    // MARK: - Компоненты
+        private var addBookForm: some View {
+            VStack(spacing: 12) {
+                VStack(spacing: 8) {
+                    TextField(String(localized: "book_title_placeholder"), text: $newBookTitle)
+                        .textFieldStyle(.roundedBorder)
+                    TextField(String(localized: "book_author_placeholder"), text: $newBookAuthor)
+                        .textFieldStyle(.roundedBorder)
+                    TextField(String(localized: "book_description_placeholder"), text: $newBookDescription)
+                        .textFieldStyle(.roundedBorder)
+                }
+                .padding(.horizontal)
+                
+                Button(String(localized: "add_book_button")) {
+                    addBook()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal)
+            }
+            .padding(.vertical, 12)
+            .background(Color(.systemGray6))
+            .transition(.opacity.combined(with: .scale))
+        }
+    
+    private var bookList: some View {
+        List {
+            ForEach(filteredBooks) { book in
+                NavigationLink(destination: EditBookView(book: book)) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(book.title).font(.title3)
+                        Text(book.author).font(.headline).foregroundColor(.gray)
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+            .onDelete(perform: deleteBook)
+            .listRowSeparator(.visible)
+        }
+        .listStyle(.plain)
+    }
+    
     // Функция для удаления задачи
     private func deleteBook(at offsets: IndexSet) {
         for index in offsets {
@@ -149,6 +157,18 @@ struct ContentView: View {
             try modelContext.save()
         } catch {
             print("Ошибка при сохранении: \(error)")
+        }
+    }
+    
+    // MARK: - Фильтрация книг для поиска
+    private var filteredBooks: [Book] {
+        if searchText.isEmpty {
+            return books
+        } else {
+            return books.filter { book in
+                book.title.localizedCaseInsensitiveContains(searchText) ||
+                book.author.localizedCaseInsensitiveContains(searchText)
+            }
         }
     }
 }
@@ -166,18 +186,18 @@ struct EditBookView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Название*", text: $book.title)
-                    TextField("Автор*", text: $book.author)
-                    TextField("Описание", text: $book.aboutDescription)
+                    TextField(String(localized: "book_title_placeholder"), text: $book.title)
+                    TextField(String(localized: "book_author_placeholder"), text: $book.author)
+                    TextField(String(localized: "book_description_placeholder"), text: $book.aboutDescription)
                 } header: {
                     // Оборачиваем Text в замыкание
-                    Text("Редактирование книги")
+                    Text(String(localized: "edit_book_label"))
                 }
             }
-            .navigationTitle("Редактировать книгу")
+            .navigationTitle(String(localized: "edit_book_title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Сохранить") {
+                    Button(String(localized: "save_button")) {
                         let trimmedTitle = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
                         let trimmedAuthor = book.author.trimmingCharacters(in: .whitespacesAndNewlines)
                         
@@ -199,12 +219,19 @@ struct EditBookView: View {
                     }
                 }
             }
-            .alert("Ошибка", isPresented: $showAlert) {
-                Button("OK", role: .cancel) {}
+            .alert(String(localized: "error_title"), isPresented: $showAlert) {
+                Button(String(localized: "OK"), role: .cancel) {}
             } message: {
-                Text("Название и автор должны содержать минимум \(minLength) символа")
+                Text(String(localized: "error_message"))
             }
         }
+    }
+}
+
+// MARK: - Расширение для обрезки пробелов
+extension String {
+    func trimmed() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

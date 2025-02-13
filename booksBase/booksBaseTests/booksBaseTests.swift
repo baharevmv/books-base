@@ -4,33 +4,67 @@
 //
 //  Created by Maksim Bakharev on 12.02.2025.
 //
-
 import XCTest
+import SwiftData
 @testable import booksBase
 
-final class booksBaseTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+final class BookTests: XCTestCase {
+    var modelContext: ModelContext!
+    var container: ModelContainer!
+    
+    override func setUp() {
+        super.setUp()
+        // Настраиваем тестовый контейнер
+        let schema = Schema([Book.self])
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        container = try! ModelContainer(for: schema, configurations: config)
+        modelContext = ModelContext(container)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    override func tearDown() {
+        modelContext = nil
+        container = nil
+        super.tearDown()
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    // Тест добавления книги
+    func testAddBook() {
+        let book = Book(title: "Test Book", author: "Test Author", aboutDescription: "Test Description")
+        modelContext.insert(book)
+        
+        // Проверяем, что книга добавлена
+        let fetchRequest = FetchDescriptor<Book>()
+        let books = try! modelContext.fetch(fetchRequest)
+        XCTAssertEqual(books.count, 1)
+        XCTAssertEqual(books.first?.title, "Test Book")
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    // Тест удаления книги
+    func testDeleteBook() {
+        let book = Book(title: "Test Book", author: "Test Author", aboutDescription: "Test Description")
+        modelContext.insert(book)
+        
+        // Удаляем книгу
+        modelContext.delete(book)
+        
+        // Проверяем, что книга удалена
+        let fetchRequest = FetchDescriptor<Book>()
+        let books = try! modelContext.fetch(fetchRequest)
+        XCTAssertEqual(books.count, 0)
     }
-
+    
+    // Тест поиска книги
+    func testSearchBooks() {
+        let book1 = Book(title: "Swift Programming", author: "Apple", aboutDescription: "Learn Swift")
+        let book2 = Book(title: "Python Basics", author: "Guido", aboutDescription: "Learn Python")
+        modelContext.insert(book1)
+        modelContext.insert(book2)
+        
+        // Фильтруем книги по запросу "Swift"
+        let fetchRequest = FetchDescriptor<Book>(predicate: #Predicate { $0.title.contains("Swift") })
+        let books = try! modelContext.fetch(fetchRequest)
+        
+        XCTAssertEqual(books.count, 1)
+        XCTAssertEqual(books.first?.title, "Swift Programming")
+    }
 }
